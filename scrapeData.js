@@ -9,6 +9,13 @@ async function fetchHTML(url, filePath) {
     const page = await browser.newPage();
     await page.goto(url);
 
+    const currentURL = page.url();
+
+    if (currentURL.startsWith("https://www.anime-planet.com/search.php?")) {
+        await browser.close();
+        throw new Error(`Unknown username. ${username}`);
+    }
+
     const totalPages = await page.$$eval('ul.nav li:not(.prev):not(.next)', elements => elements.length); 
 
 
@@ -27,7 +34,13 @@ async function fetchHTML(url, filePath) {
 
     userAvatarImage = imageName;
 
-    const imagePath = path.join(__dirname, 'createStats', 'create', 'images', imageName);
+    const imagesFolderPath = path.join(__dirname, 'createStats', 'create', 'images');
+
+    if (!fs.existsSync(imagesFolderPath)) {
+        fs.mkdirSync(imagesFolderPath, { recursive: true });
+    }
+
+    const imagePath = path.join(imagesFolderPath, imageName);
     const imageWriter = fs.createWriteStream(imagePath);
 
     const request = https.get(imageSrc, response => {
@@ -186,29 +199,29 @@ async function extractDataFromFile(filePath) {
 }
 
 let userAvatarImage = '';
-const username = "Sandelier"
-const url = `https://www.anime-planet.com/users/${username}/manga?per_page=560`;
+let username;
+let url;
 const filePath = 'output.html';
 
-fetchHTML(url, filePath)
-   .then(async (savedFilePath) => {
-       console.log('HTML data saved to:', savedFilePath);
-       const extractedData = await extractDataFromFile(savedFilePath);
-       const jsonData = JSON.stringify(extractedData, null, 2);
-       fs.writeFileSync('dataJson.json', jsonData);
-       console.log('JSON data saved to dataJson.json');
-   })
-   .catch(error => {
-       console.error('Error fetching HTML:', error);
-   });
+async function extractData(user) {
+    username = user;
+    url = `https://www.anime-planet.com/users/${username}/manga?per_page=560`;
+
+    if (username.length < 1) {
+        throw Error('Invalid username.');
+    }
+
+    try {
+        const savedFilePath = await fetchHTML(url, filePath);
+        console.log('HTML data saved to:', savedFilePath);
+        const extractedData = await extractDataFromFile(savedFilePath);
+        const jsonData = JSON.stringify(extractedData, null, 2);
+        fs.writeFileSync('dataJson.json', jsonData);
+        console.log('JSON data saved to dataJson.json');
+    } catch (error) {
+        throw Error(error);
+    }
+};
 
 
-//extractDataFromFile(filePath)
-//    .then(async (extractedData) => {
-//        const jsonData = JSON.stringify(extractedData, null, 2);
-//        fs.writeFileSync('dataJson.json', jsonData);
-//        console.log('JSON data saved to dataJson.json');
-//    })
-//    .catch(error => {
-//        console.error('Error fetching HTML:', error);
-//    });
+module.exports = extractData;

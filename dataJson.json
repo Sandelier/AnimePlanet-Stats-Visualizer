@@ -301,7 +301,7 @@
     ],
     "serializer": "Kakao Page",
     "status": "status2",
-    "chaptersRead": "71",
+    "chaptersRead": "82",
     "isChapter": true
   },
   {
@@ -1080,9 +1080,15 @@
   {
     "year": "2024",
     "tags": [
+      "Action",
+      "Drama",
+      "Fantasy",
       "Manhwa",
       "Webtoons",
       "Full Color",
+      "Historical",
+      "Martial Arts",
+      "Supernatural",
       "Based on a Web Novel"
     ],
     "serializer": "Naver Webtoon",
@@ -2312,7 +2318,7 @@
     ],
     "serializer": "Kakao Page",
     "status": "status2",
-    "chaptersRead": "112",
+    "chaptersRead": "114",
     "isChapter": true
   },
   {
@@ -3039,7 +3045,7 @@
     ],
     "serializer": "AC.QQ",
     "status": "status2",
-    "chaptersRead": "206",
+    "chaptersRead": "305",
     "isChapter": true
   },
   {
@@ -8602,6 +8608,7 @@
       "Manhwa",
       "Romance",
       "Webtoons",
+      "Art",
       "Full Color",
       "Illness",
       "Monsters",
@@ -9768,7 +9775,7 @@
     ],
     "serializer": "Kuaikan Manhua",
     "status": "status2",
-    "chaptersRead": "112",
+    "chaptersRead": "114",
     "isChapter": true
   },
   {
@@ -10253,7 +10260,7 @@
     ],
     "serializer": "Kakao Page",
     "status": "status2",
-    "chaptersRead": "52",
+    "chaptersRead": "62",
     "isChapter": true
   },
   {
@@ -10996,7 +11003,7 @@
     ],
     "serializer": "Naver Webtoon",
     "status": "status2",
-    "chaptersRead": "113",
+    "chaptersRead": "117",
     "isChapter": true
   },
   {
@@ -16646,7 +16653,7 @@
     ],
     "serializer": "Naver Webtoon",
     "status": "status2",
-    "chaptersRead": "26",
+    "chaptersRead": "46",
     "isChapter": true
   },
   {
@@ -19944,6 +19951,7 @@
       "Full Color",
       "Game Elements",
       "Hospital",
+      "Medical",
       "Based on a Web Novel"
     ],
     "serializer": "Kuaikan Manhua",
@@ -20275,7 +20283,7 @@
     ],
     "serializer": "Kakao Page",
     "status": "status2",
-    "chaptersRead": "101",
+    "chaptersRead": "102",
     "isChapter": true
   },
   {
