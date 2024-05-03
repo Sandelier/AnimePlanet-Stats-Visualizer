@@ -10,6 +10,7 @@ To use the program, you need to first download all the dependencies, and then yo
 
 To change the colors of each block, you would have to modify the codes in "chaptersRead.js,"  "makeBarChart.js," or "makeDoughnutChart.js" yourself. I am thinking of making a setting file where you can easily set options to your liking.
 
+If you want to use the graphs on your animeplanet bio, then you need to upload the images to some image-sharing website, for example, Imgur.
 ## Important
 
 If you want to use the same fonts as AnimePlanet uses, then you need to install the fonts located in `creteStats/create/fonts.rar` into your computer. And well, the reason why you need to do it this way is because it seems the "node-canvas" can't seem to be able to use the "registerFont" method; instead, it's only able to find the font if it's installed on the machine.
