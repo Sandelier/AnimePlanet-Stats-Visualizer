@@ -12,7 +12,7 @@ To change the colors of each block, you would have to modify the codes in "chapt
 
 ## Important
 
-If you want to use the same fonts as AnimePlanet uses, then you need to install the fonts located in `creteStats/create/fonts.rar`. And well, the reason why you need to do it this way is because it seems the "node-canvas" can't seem to be able to use the "registerFont" method; instead, it's only able to find the font if it's installed on the machine.
+If you want to use the same fonts as AnimePlanet uses, then you need to install the fonts located in `creteStats/create/fonts.rar` into your computer. And well, the reason why you need to do it this way is because it seems the "node-canvas" can't seem to be able to use the "registerFont" method; instead, it's only able to find the font if it's installed on the machine.
 
 ## Dependencies
 
