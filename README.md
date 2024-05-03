@@ -5,6 +5,11 @@ Well, I wanted to get some statistics on the different mangas that I have read, 
 
 If you find this project useful, it would be appreciated if you added the github project somewhere in the bio if you decide to use some of the graphs in your bio.
 
+![Showcase](showcase/showcase1.png)
+
+## Limitations
+The program only gets the information of each manga from the toolbar that is shown, so basically the serializer, tags, chapters, status, and date since to receive more information like the number of total reads of individual manga or authors, etc., are only available on the manga's own page and are not loaded on the manga's own page and are not loaded in your manga list, which means it would take a lot longer to retrieve the data of each manga + there would be rate-limiting problems, and anyway, I wouldn't really want to do it since it could negatively affect animeplanet.
+
 ## Usage
 To use the program, you need to first download all the dependencies, and then you can run the "main.js" file that is in the root directory, which will go and scrape all the data from mangas that are in your profile. When you're done with that, it goes and makes the graphs into "createStats/create/images.".
 

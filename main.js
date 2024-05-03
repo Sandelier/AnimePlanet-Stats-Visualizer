@@ -7,6 +7,12 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
+
+console.clear();
+
+console.log('\nAnimePlanet-Stats-Visualizer');
+console.log('The program is in progress but hopefully you still enjoy it :p \n');
+
 rl.question('Enter your animeplanet username: ', async (username) => {
   try {
     console.log('Starting to scrape.');
