@@ -1,6 +1,6 @@
 
 # AnimePlanet Stats Visualizer
-Well, I wanted to get some statistics on the different mangas that I have read, and since animeplanet does not really give you any statistics, I made some that were easily available. I made it with manga in mind, but maybe later on I could make it work with anime as well.
+Well, I wanted to get some statistics on the different mangas that I have read, and since animeplanet does not really give you any statistics, I made some that were easily available.
 
 If you find this project useful and you added graphs to your bio, it would be appreciated if you added the github repository link somewhere in your bio. It's not a must tho.
 
