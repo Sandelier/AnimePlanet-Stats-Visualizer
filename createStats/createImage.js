@@ -1,17 +1,27 @@
 
 const fs = require('fs');
 
-const makeChaptersReadImage = require('./create/chaptersRead.js');
+const makeinstallmentImage = require('./create/installment.js');
 const makeDoughnutChart = require('./create/makeDoughnutChart.js');
 const makeBarChart = require('./create/makeBarChart.js');
 
 
 function createImage(statsData) {
+
+    const folderPath = `create/charts/${statsData.dataType}`;
+    if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath, { recursive: true });
+        console.log(`Created ${folderPath} folder.`);
+    }
+
     makeBarChart(statsData, "favoriteTags", 1050);
     makeBarChart(statsData, "releaseYears", 510);
     makeDoughnutChart(statsData, "typesImage");
     makeDoughnutChart(statsData, "sourcesImage");
-    makeChaptersReadImage(statsData);
+    makeinstallmentImage(statsData);
+
+    const jsonData = JSON.stringify(statsData, null, 2);
+    fs.writeFileSync(`${folderPath}/chartsData.json`, jsonData);
 }
 
 module.exports = createImage;

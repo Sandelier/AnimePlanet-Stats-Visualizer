@@ -51,7 +51,7 @@ function generateTicks(tickLimit, targetNumber) {
     return ticks;
 }
 
-function makeChaptersReadImage(statsData) {
+function makeinstallmentImage(statsData) {
     const canvas = createCanvas(1050, 170);
     const ctx = canvas.getContext('2d');
 
@@ -142,8 +142,16 @@ function makeChaptersReadImage(statsData) {
 
     // Top text Chapters Read
 
+    let topText = 'Chapters Read';
+    let bottomText = `Avg. ${statsData.averageChaptersPerDay} ch per day`;
+
+    if (statsData.dataType == "anime") {
+        topText = 'Episodes watched';
+        bottomText = `Avg. ${statsData.averageChaptersPerDay} ep per day`;
+    }
+
+
     
-    const topText = 'Chapters Read';
     ctx.font = '25px Oswald';
 
     const topTextWidth = ctx.measureText(topText).width; 
@@ -155,7 +163,6 @@ function makeChaptersReadImage(statsData) {
 
     // Bottom text avg ch per day
 
-    const bottomText = `Avg. ${statsData.averageChaptersPerDay} ch per day`;
     ctx.font = '15px Mulish';
 
     const bottomTextWidth = ctx.measureText(bottomText).width; 
@@ -167,8 +174,21 @@ function makeChaptersReadImage(statsData) {
 
 
     const buffer = canvas.toBuffer('image/png');
-    fs.writeFileSync(`create/images/chaptersRead.png`, buffer);
+
+    if (statsData.dataType == "anime") {
+        topText = 'Episodes watched';
+        bottomText = `Avg. ${statsData.averageChaptersPerDay} ep per day`;
+    }
+
+    let imageName;
+    if (statsData.dataType == "manga") {
+        imageName = "chaptersRead";
+    } else {
+        imageName = "episodesWatched";
+    }
+
+    fs.writeFileSync(`create/charts/${statsData.dataType}/${imageName}.png`, buffer);
     console.log(`Chapters read image created successfully.`);
 }
 
-module.exports = makeChaptersReadImage;
+module.exports = makeinstallmentImage;

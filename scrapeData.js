@@ -34,7 +34,7 @@ async function fetchHTML(url, filePath) {
 
     userAvatarImage = imageName;
 
-    const imagesFolderPath = path.join(__dirname, 'createStats', 'create', 'images');
+    const imagesFolderPath = path.join(__dirname, 'createStats', 'create', 'charts');
 
     if (!fs.existsSync(imagesFolderPath)) {
         fs.mkdirSync(imagesFolderPath, { recursive: true });
@@ -52,23 +52,33 @@ async function fetchHTML(url, filePath) {
 
 
     while (true) {
-        await page.waitForSelector(`ul.nav li.selected`);
-        const selectedPage = await page.$eval('ul.nav li.selected', element => element.textContent.trim());
+        try {
+            await page.waitForSelector(`ul.nav li.selected`, { timeout: 1000 });
+            const selectedPage = await page.$eval('ul.nav li.selected', element => element.textContent.trim());
+    
+            if (parseInt(selectedPage) === currentPage) {
+                const childrenHTML = await page.$eval('ul.cardDeck.cardGrid', element => {
+                    return Array.from(element.children).map(child => child.outerHTML).join('');
+                });
+                combinedHTML += childrenHTML;
+                if (currentPage === totalPages) break;
+            }
+    
+            await page.waitForSelector('ul.nav li.next');
+            const nextButton = await page.$('ul.nav li.next a');
+            if (!nextButton) break;
+    
+            await page.click('ul.nav li.next a');
+            currentPage++;
 
-        if (parseInt(selectedPage) === currentPage) {
+        } catch (error) {
+            // Just an quick fix for now when the list dosent have an next page.
             const childrenHTML = await page.$eval('ul.cardDeck.cardGrid', element => {
                 return Array.from(element.children).map(child => child.outerHTML).join('');
             });
             combinedHTML += childrenHTML;
-            if (currentPage === totalPages) break;
+            break;
         }
-
-        await page.waitForSelector('ul.nav li.next');
-        const nextButton = await page.$('ul.nav li.next a');
-        if (!nextButton) break;
-
-        await page.click('ul.nav li.next a');
-        currentPage++;
     }
 
     await browser.close();
@@ -100,19 +110,38 @@ async function extractDataFromFile(filePath) {
 
         const yearElement = doc('.iconYear');
         const tagsElements = doc('.tags li');
-        const chaptersElement = doc('.iconVol');
-        const serializerElement = chaptersElement.next().attr('class') ? null : chaptersElement.next().text().trim();
 
-        if (serializerElement == "1985") {
-            console.log(chaptersElement.parent().html());
+        let chaptersElement;
+
+        if (dataType == "anime") {
+            chaptersElement = doc('.type');
+        } else {
+            chaptersElement = doc('.iconVol');
         }
+        const serializerElement = chaptersElement.next().attr('class') ? null : chaptersElement.next().text().trim();
         
         const status1Element = doc('.myListBar .status1');
-        let chaptersRead;
+        let installment;
+
+        let type;
+
 
         // if its read state we can get the chapters straight from the total chapters.
         if (status1Element.length > 0) {
-            chaptersRead = chaptersElement.text().trim();
+
+            if (dataType == "anime") {
+                const typeAndEp = chaptersElement.text();
+
+                const regex = /(\d+)\s*(?:eps|ep|episodes?)/i;
+    
+                const match = regex.exec(typeAndEp);
+
+                installment = parseInt(match[1], 10); 
+                type = typeAndEp.split('(')[0].trim();
+
+            } else {
+                installment = chaptersElement.text().trim();
+            }
         } else {
             const statusElements = ['status2', 'status5', 'status3'];
             for (const status of statusElements) {
@@ -122,9 +151,13 @@ async function extractDataFromFile(filePath) {
                 if (statusElement.length > 0) {
 
                     // had to filter out everything expect text nodes since it was retrieving the rating also.
-                    chaptersRead = statusElement.parent().contents().filter(function() {
+                    installment = statusElement.parent().contents().filter(function() {
                         return this.nodeType === 3;
                     }).text().trim().split(' - ')[1];
+
+                    if (dataType == "anime" && installment != undefined) {
+                        installment = installment.split("/")[0];
+                    }
 
                     break;
                 }
@@ -132,39 +165,42 @@ async function extractDataFromFile(filePath) {
         }
 
         // Well for now atleast we dont need any that dosent have chapters.
-        if (chaptersRead == null || chaptersRead == undefined) {
+        if (installment == null || installment == undefined) {
             return;
         }
 
         // If its one shot.
-        if (chaptersRead.toLowerCase().includes('one')) {
-            chaptersRead = "1 chs";
+        if (dataType == "manga" && installment.toLowerCase().includes('one')) {
+            installment = "1 chs";
         }
 
 
         let isChapter = false;
-        if (chaptersRead) {
-            const numbers = chaptersRead.match(/\d+/g);
+        if (installment && dataType == "manga") {
+            const numbers = installment.match(/\d+/g);
             let chapters = 0;
 
-            if (chaptersRead.includes('Vol:') && chaptersRead.includes('Ch:')) {
+            if (installment.includes('Vol:') && installment.includes('Ch:')) {
                 chapters = parseInt(numbers[1]);
                 isChapter = true;
-            } else if (chaptersRead.includes('chs')) {
+            } else if (installment.includes('chs')) {
                 chapters = parseInt(numbers[0]);
                 isChapter = true;
-            } else if (chaptersRead.includes('vols')) {
+            } else if (installment.includes('vols')) {
                 chapters = parseInt(numbers[0]);
                 isChapter = false;
-            } else if (chaptersRead.includes('Vol:')) {
+            } else if (installment.includes('Vol:')) {
                 chapters = parseInt(numbers[0]);
                 isChapter = false;
-            } else if (chaptersRead.includes('Ch:')) {
+            } else if (installment.includes('Ch:')) {
                 chapters = parseInt(numbers[0]);
                 isChapter = true;
             }
 
-            chaptersRead = chapters.toString();
+            installment = chapters.toString();
+        } else if (dataType == "anime") {
+            // just for now. gonna change it later on.
+            isChapter = true;
         }
 
         const year = yearElement.text().trim().split(' - ')[0];
@@ -180,20 +216,21 @@ async function extractDataFromFile(filePath) {
             status = statusElement.attr('class').split(' ').find(className => className.includes('status'));
         }
 
-        // Creating JSON object
         const jsonObject = {
             year: year !== '' ? year : undefined,
             tags: tags.length > 0 ? tags : undefined,
             serializer: serializerElement !== null ? serializerElement : undefined,
             status: status,
-            chaptersRead: chaptersRead !== '' ? chaptersRead : undefined,
-            isChapter: isChapter
+            installment: installment !== '' ? installment : undefined,
+            isChapter: isChapter,
+            type: type !== '' ? type : undefined,
         };
 
         jsonData.push(jsonObject);
     });
 
-    jsonData.unshift({ joinedDate, username, userAvatarImage });
+
+    jsonData.unshift({ joinedDate, username, userAvatarImage, dataType });
 
     return jsonData;
 }
@@ -201,11 +238,13 @@ async function extractDataFromFile(filePath) {
 let userAvatarImage = '';
 let username;
 let url;
+let dataType;
 const filePath = 'output.html';
 
-async function extractData(user) {
+async function extractData(user, type) {
     username = user;
-    url = `https://www.anime-planet.com/users/${username}/manga?per_page=560`;
+    dataType = type;
+    url = `https://www.anime-planet.com/users/${username}/${dataType}?per_page=560`;
 
     if (username.length < 1) {
         throw Error('Invalid username.');

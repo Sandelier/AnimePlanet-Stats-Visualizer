@@ -145,7 +145,7 @@ function makeBarChart(statsData, imgName, canvasWidth) {
         options: options
     }); 
     const buffer = canvas.toBuffer('image/png');
-    fs.writeFileSync(`create/images/${imgName}.png`, buffer);
+    fs.writeFileSync(`create/charts/${statsData.dataType}/${imgName}.png`, buffer);
     console.log(`${imgName} image created successfully.`);
 }
 

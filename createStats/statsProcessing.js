@@ -27,6 +27,9 @@ function processData() {
 			let statusCounts = {};
 			let sources = {};
 			let accountJoinDate;
+			let dataType;
+
+			let timeTaken = 0;
 	
 			let types = {
 				"Light Novels": 0,
@@ -44,14 +47,20 @@ function processData() {
 	
 				if (entry.joinedDate) {
 					accountJoinDate = parseDate(entry.joinedDate);
+					dataType = entry.dataType;
+
+					if (dataType == "anime") {
+						types = {};
+					}
+
 					return;
 				}
 	
 				// Chapters
 				if (entry.isChapter === true) {
-					chapterCount += parseInt(entry.chaptersRead);
+					chapterCount += parseInt(entry.installment);
 				} else {
-					volumeCount += parseInt(entry.chaptersRead);
+					volumeCount += parseInt(entry.installment);
 				}
 	
 				// Tags
@@ -63,12 +72,12 @@ function processData() {
 					// Have to figure out something for volumes since this also calculates volume.
 					if (!tagCounts[tag]) {
 						tagCounts[tag] = {
-							chaptersRead: 0,
+							installment: 0,
 							count: 0
 						};
 					}
 	
-					tagCounts[tag].chaptersRead += parseInt(entry.chaptersRead);
+					tagCounts[tag].installment += parseInt(entry.installment);
 					tagCounts[tag].count++;
 	
 					// Sources
@@ -83,7 +92,7 @@ function processData() {
 					}
 	
 					// Types
-					if (tag in types) {
+					if (dataType == "manga" && tag in types) {
 						types[tag]++;
 						isTypeFound = true;
 	
@@ -100,7 +109,7 @@ function processData() {
 				}
 	
 				// If no type found we will count it as manga
-				if (!isTypeFound) {
+				if (!isTypeFound && dataType == "manga") {
 					types["Manga"]++;
 				}
 	
@@ -130,12 +139,21 @@ function processData() {
 					}
 					statusCounts[status]++;
 				}
+
+				// Anime type
+				const type = entry.type;
+				if (type) {
+					if (!types[type]) {
+						types[type] = 0;
+					}
+					types[type]++;
+				}			
 			});
 	
 			// Tag and year and serializer rearraigment.
 			const tagCountsArray = Object.entries(tagCounts).map(([tag, data]) => ({
 				tag,
-				chaptersRead: data.chaptersRead,
+				installment: data.installment,
 				occurrences: data.count
 			}));
 	
@@ -155,28 +173,29 @@ function processData() {
 			const daysElapsed = differenceInDays(accountJoinDate, currentDate);
 			const averageChaptersPerDay = (chapterCount / daysElapsed).toFixed(2);
 	
-	
-			// Time taken to read.
-	
-			// Modify this to what you think you will take to read per chapter in average. 
-			// Animeplanet calculation is something like 5 minute per chapter which is way too long for me atleast.
-			// Volume calculation is pretty tough since every manga has so different amounth of chapters per volume.
-	
-			const minutesPerChapter = 1.2; 
-			//const minutesPerVolume = minutesPerChapter * 5; 
-	
-			const timeTakenForChapters = chapterCount * minutesPerChapter;
-			//const timeTakenForVolumes = volumeCount * minutesPerVolume;
-	
-			//const timeTaken = timeTakenForChapters + timeTakenForVolumes;
-			const timeTaken = timeTakenForChapters;
-	
+			if (dataType == "manga") {
+
+				// Time taken to read.
+				// Modify this to what you think you will take to read per chapter in average. 
+				// Animeplanet calculation is something like 5 minute per chapter which is way too long for me atleast.
+				// Volume calculation is pretty tough since every manga has so different amounth of chapters per volume.
+				
+				const minutesPerChapter = 1.2; 
+				//const minutesPerVolume = minutesPerChapter * 5; 
+				
+				const timeTakenForChapters = chapterCount * minutesPerChapter;
+				//const timeTakenForVolumes = volumeCount * minutesPerVolume;
+				
+				//const timeTaken = timeTakenForChapters + timeTakenForVolumes;
+				timeTaken = timeTakenForChapters;
+			} 
 	
 	
 			const statsData = {
 				totalEntries: totalEntries,
 				chapterCount: chapterCount,
 				volumeCount: volumeCount,
+				dataType: dataType,
 				tagCounts: tagCountsArray,
 				yearCounts: yearCountsArray,
 				serializerCounts: serializerCountsArray,
@@ -192,7 +211,7 @@ function processData() {
 					//}
 				}
 			};
-	
+						
 			createImage(statsData);
 	
 		} catch (error) {
@@ -210,21 +229,54 @@ function processCounts(counts) {
 		.sort((a, b) => Object.values(b)[0] - Object.values(a)[0]);
 }
 
+
+	// Theres probably more intelligent way of making this but couldnt immediately think of one so for now it will be like this :p
 function calculateCountsAndPercentages(data, totalObjects) {
-	const keys = Object.keys(data);
-	const sortedKeys = keys.sort((a, b) => data[b] - data[a]);
 
-	const sortedData = {};
-	sortedKeys.forEach(key => {
-		const count = data[key];
-		const percentage = (count / totalObjects) * 100;
-		sortedData[key] = {
-			count,
-			percentage: percentage.toFixed(2)
-		};
-	});
+	const limit = 7;
 
-	return sortedData;
+    const keys = Object.keys(data);
+    const sortedKeys = keys.sort((a, b) => data[b] - data[a]);
+
+    const sortedData = {};
+    let otherData = {};
+
+    sortedKeys.forEach((key, index) => {
+        if (index < limit) {
+            const count = data[key];
+            const percentage = (count / totalObjects) * 100;
+            sortedData[key] = {
+                count,
+                percentage: percentage.toFixed(2)
+            };
+        } else {
+            otherData[key] = data[key];
+        }
+    });
+
+    const otherKeys = Object.keys(otherData).sort((a, b) => otherData[b] - otherData[a]);
+
+    let otherCount = 0;
+    otherKeys.forEach(key => {
+        otherCount += otherData[key];
+    });
+
+    if (otherCount > 0) {
+        sortedData["Other"] = {
+            count: otherCount,
+            percentage: ((otherCount / totalObjects) * 100).toFixed(2)
+        };
+    }
+
+    const mergedKeys = Object.keys(sortedData);
+    const sortedMergedKeys = mergedKeys.sort((a, b) => sortedData[b].count - sortedData[a].count);
+
+    const sortedResult = {};
+    sortedMergedKeys.forEach(key => {
+        sortedResult[key] = sortedData[key];
+    });
+
+    return sortedResult;
 }
 
 

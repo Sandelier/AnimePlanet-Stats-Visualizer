@@ -15,9 +15,12 @@ function getSourcesData(statsData) {
         const amount = source.count;
         return `${cleanSourceName} (${amount})`;
     });
-    labels = ["Based on a...", ...labels];
+
+
 
     let data = Object.values(sourcePercentages).map(source => source.count);
+
+    labels = ["Based on a...", ...labels];
     data = [0, ...data];
 
     const bgColors = [
@@ -28,7 +31,8 @@ function getSourcesData(statsData) {
         '#4169E1',
         '#FF69B4',
         '#00FFFF',
-        '#FF5733'
+        '#FF5733',
+        '#00FF00'
     ];
 
     return { total, labels, data, bgColors };
@@ -116,6 +120,7 @@ function makeDoughnutChart(statsData, imgName) {
         }
     };
 
+
     new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -134,7 +139,7 @@ function makeDoughnutChart(statsData, imgName) {
     //return { canvas, name: name };
 
     const buffer = canvas.toBuffer('image/png');
-    fs.writeFileSync(`create/images/${imgName}.png`, buffer);
+    fs.writeFileSync(`create/charts/${statsData.dataType}/${imgName}.png`, buffer);
     console.log(`${imgName} image created successfully.`);
 }
 
