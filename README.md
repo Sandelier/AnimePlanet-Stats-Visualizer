@@ -12,7 +12,7 @@ The program only gets the information of each manga from the toolbar that is sho
 ## Usage
 To use the program, you need to first download all the dependencies, and then you can run the "main.js" file that is in the root directory, which will go and scrape all the data from mangas that are in your profile. When you're done with that, it goes and makes the graphs into "createStats/create/images".
 
-To change the colors of each block, you would have to modify the codes in "chaptersRead.js",  "makeBarChart.js", or "makeDoughnutChart.js" yourself. I am thinking of making a setting file where you can easily set options to your liking.
+To change the colors of each block, you would have to modify the codes in "installment.js",  "makeBarChart.js", or "makeDoughnutChart.js" yourself. I am thinking of making a setting file where you can easily set options to your liking.
 
 If you want to use the graphs on your animeplanet bio, then you need to upload the images to some image-sharing website, for example, Imgur.
 If you want to make it so that you don't need to update your animeplanet bio every time with a new link, you would have to use a service that keeps the same link to the image even if you modify it.
