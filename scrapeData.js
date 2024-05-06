@@ -241,7 +241,7 @@ let url;
 let dataType;
 const filePath = 'output.html';
 
-async function extractData(user, type) {
+async function extractData(user, type, skipScraping = false) {
     username = user;
     dataType = type;
     url = `https://www.anime-planet.com/users/${username}/${dataType}?per_page=560`;
@@ -251,8 +251,13 @@ async function extractData(user, type) {
     }
 
     try {
-        const savedFilePath = await fetchHTML(url, filePath);
-        console.log('HTML data saved to:', savedFilePath);
+
+        let savedFilePath = "output.html"
+        if (skipScraping == false) {
+            savedFilePath = await fetchHTML(url, filePath);
+            console.log('HTML data saved to:', savedFilePath);
+        }
+
         const extractedData = await extractDataFromFile(savedFilePath);
         const jsonData = JSON.stringify(extractedData, null, 2);
         fs.writeFileSync('dataJson.json', jsonData);

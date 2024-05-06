@@ -4,6 +4,7 @@ const fs = require('fs');
 const makeinstallmentImage = require('./create/installment.js');
 const makeDoughnutChart = require('./create/makeDoughnutChart.js');
 const makeBarChart = require('./create/makeBarChart.js');
+const makeRadarChart = require('./create/makeRadarChart.js');
 
 
 function createImage(statsData) {
@@ -19,6 +20,9 @@ function createImage(statsData) {
     makeDoughnutChart(statsData, "typesImage");
     makeDoughnutChart(statsData, "sourcesImage");
     makeinstallmentImage(statsData);
+    
+
+    makeRadarChart(statsData, "favoriteTags", 510);
 
     const jsonData = JSON.stringify(statsData, null, 2);
     fs.writeFileSync(`${folderPath}/chartsData.json`, jsonData);
