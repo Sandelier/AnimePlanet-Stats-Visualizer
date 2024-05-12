@@ -129,13 +129,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 createStats/create/images/1514403.jpg
-createStats/create/templates/Screenshot_26.xcf
-createStats/create/templates/typesImage.png
+createStats/create/templates/*
 dataJson.json
 output.html
-createStats/create/images/installment.png
-createStats/create/images/favoriteTags.png
-createStats/create/images/releaseYears.png
-createStats/create/images/sourcesImage.png
-createStats/create/images/typesImage.png
 createStats/create/charts/*

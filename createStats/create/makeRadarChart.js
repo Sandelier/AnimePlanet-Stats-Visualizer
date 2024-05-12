@@ -7,7 +7,7 @@ function makeRadarChart(statsData, imgName, canvasWidth) {
     const canvas = createCanvas(canvasWidth, 246);
     const ctx = canvas.getContext('2d');
 
-    const tagCounts = statsData.tagCounts.slice(0, 10);
+    const tagCounts = statsData.tags.slice(0, 10);
 
 
     const labels = tagCounts.map(tag => tag.tag);
@@ -31,6 +31,7 @@ function makeRadarChart(statsData, imgName, canvasWidth) {
 
 
 
+    Chart.defaults.color = 'white';
     Chart.defaults.font.family = 'Mulish';
 
 

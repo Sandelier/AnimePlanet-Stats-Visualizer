@@ -119,6 +119,9 @@ async function extractDataFromFile(filePath) {
             chaptersElement = doc('.iconVol');
         }
         const serializerElement = chaptersElement.next().attr('class') ? null : chaptersElement.next().text().trim();
+
+        const rating = doc('.entryBar .ttRating').text().trim();
+        const userRating = doc('.myListBar .ttRating').text().trim();
         
         const status1Element = doc('.myListBar .status1');
         let installment;
@@ -149,7 +152,6 @@ async function extractDataFromFile(filePath) {
                 const statusElement = doc(`.myListBar .${status}`);
 
                 if (statusElement.length > 0) {
-
                     // had to filter out everything expect text nodes since it was retrieving the rating also.
                     installment = statusElement.parent().contents().filter(function() {
                         return this.nodeType === 3;
@@ -220,6 +222,8 @@ async function extractDataFromFile(filePath) {
             year: year !== '' ? year : undefined,
             tags: tags.length > 0 ? tags : undefined,
             serializer: serializerElement !== null ? serializerElement : undefined,
+            rating: rating !== '' ? rating : undefined,
+            userRating: userRating !== '' ? userRating : undefined,
             status: status,
             installment: installment !== '' ? installment : undefined,
             isChapter: isChapter,

@@ -1,3 +1,60 @@
 
 
-// wip.
+{
+    "charts": [
+      {
+        "name": "favoriteTags",
+        "type": "bar",
+        "dataAndIndex": {
+          "tags": 2
+        },
+        "bgColors": [],
+        "limit": 15,
+        "chartWidth": 1050
+      },
+      {
+        "name": "releaseYears",
+        "type": "bar",
+        "dataAndIndex": {
+          "years": 0
+        },
+        "bgColors": [],
+        "limit": 10,
+        "chartWidth": 510
+      },
+      {
+        "name": "sources",
+        "type": "doughnut",
+        "dataAndIndex": {
+          "sources": 1
+        },
+        "bgColors": [
+            "#FF5733",
+            "#FFD700",
+            "#00FF00",
+            "#4169E1",
+            "#FF69B4",
+            "#00FFFF",
+            "#FF5733",
+            "#00FF00"
+        ],
+        "limit": 8
+      },
+      {
+        "name": "types",
+        "type": "doughnut",
+        "dataAndIndex": {
+          "types": 0
+        },
+        "bgColors": [
+            "#FF5733",
+            "#FFD700",
+            "#00FF00",
+            "#4169E1",
+            "#FF69B4",
+            "#00FFFF"
+        ],
+        "limit": 9
+      }
+    ]
+}

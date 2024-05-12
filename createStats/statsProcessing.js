@@ -83,10 +83,11 @@ function processData() {
 					// Sources
 					if (tag.startsWith("Based on a")) {
 						isBasedOnSomething = true;
-						if (!sources[tag]) {
-							sources[tag] = 0;
+						const cleanTag = tag.replace("Based on a", "").trim();
+						if (!sources[cleanTag]) {
+							sources[cleanTag] = 0;
 						}
-						sources[tag]++;
+						sources[cleanTag]++;
 	
 						delete tagCounts[tag];
 					}
@@ -163,9 +164,9 @@ function processData() {
 			const serializerCountsArray = processCounts(serializerCount);
 			const typesCountArray = processCounts(types);
 	
-			const statusPercentages = calculateCountsAndPercentages(statusCounts, totalEntries);
+			const statusPercentages = calculateCountsAndPercentages(statusCounts, totalEntries, "status");
 	
-			const sourcePercentages = calculateCountsAndPercentages(sources, totalEntries);
+			const sourcePercentages = calculateCountsAndPercentages(sources, totalEntries, "source");
 	
 	
 			// average chapters per day
@@ -196,12 +197,12 @@ function processData() {
 				chapterCount: chapterCount,
 				volumeCount: volumeCount,
 				dataType: dataType,
-				tagCounts: tagCountsArray,
-				yearCounts: yearCountsArray,
-				serializerCounts: serializerCountsArray,
-				typesCounts: typesCountArray,
-				statusPercentages: statusPercentages,
-				sourcePercentages: sourcePercentages,
+				tags: tagCountsArray,
+				years: yearCountsArray,
+				serializers: serializerCountsArray,
+				types: typesCountArray,
+				statuss: statusPercentages,
+				sources: sourcePercentages,
 				averageChaptersPerDay: averageChaptersPerDay,
 				timeTaken: {
 					minutes: timeTaken,
@@ -230,53 +231,48 @@ function processCounts(counts) {
 }
 
 
-	// Theres probably more intelligent way of making this but couldnt immediately think of one so for now it will be like this :p
-function calculateCountsAndPercentages(data, totalObjects) {
-
+// Theres probably more intelligent way of making this but couldnt immediately think of one so for now it will be like this :p
+function calculateCountsAndPercentages(data, totalObjects, name) {
 	const limit = 7;
 
-    const keys = Object.keys(data);
-    const sortedKeys = keys.sort((a, b) => data[b] - data[a]);
+	const keys = Object.keys(data);
+	const sortedKeys = keys.sort((a, b) => data[b] - data[a]);
 
-    const sortedData = {};
-    let otherData = {};
+	const sortedData = [];
+	let otherData = {};
 
-    sortedKeys.forEach((key, index) => {
-        if (index < limit) {
-            const count = data[key];
-            const percentage = (count / totalObjects) * 100;
-            sortedData[key] = {
-                count,
-                percentage: percentage.toFixed(2)
-            };
-        } else {
-            otherData[key] = data[key];
-        }
-    });
+	sortedKeys.forEach((key, index) => {
+		if (index < limit) {
+			const count = data[key];
+			const percentage = (count / totalObjects) * 100;
+			sortedData.push({
+				[name]: key,
+				count,
+				percentage: percentage.toFixed(2)
+			});
+		} else {
+			otherData[key] = data[key];
+		}
+	});
 
-    const otherKeys = Object.keys(otherData).sort((a, b) => otherData[b] - otherData[a]);
+	const otherKeys = Object.keys(otherData).sort((a, b) => otherData[b] - otherData[a]);
 
-    let otherCount = 0;
-    otherKeys.forEach(key => {
-        otherCount += otherData[key];
-    });
+	let otherCount = 0;
+	otherKeys.forEach(key => {
+		otherCount += otherData[key];
+	});
 
-    if (otherCount > 0) {
-        sortedData["Other"] = {
-            count: otherCount,
-            percentage: ((otherCount / totalObjects) * 100).toFixed(2)
-        };
-    }
+	if (otherCount > 0) {
+		sortedData.push({
+			[name]: "Other",
+			count: otherCount,
+			percentage: ((otherCount / totalObjects) * 100).toFixed(2)
+		});
+	}
 
-    const mergedKeys = Object.keys(sortedData);
-    const sortedMergedKeys = mergedKeys.sort((a, b) => sortedData[b].count - sortedData[a].count);
+	sortedData.sort((a, b) => b.count - a.count);
 
-    const sortedResult = {};
-    sortedMergedKeys.forEach(key => {
-        sortedResult[key] = sortedData[key];
-    });
-
-    return sortedResult;
+	return sortedData;
 }
 
 
