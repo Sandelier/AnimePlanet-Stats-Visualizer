@@ -1,4 +1,3 @@
-Old repository
 Go to ![Animeplanet-Additions]([showcase/showcase1.png](https://github.com/Sandelier/AnimePlanet-Additions)) for newest version of visualizer. Way better than this one.
 
 
